@@ -1,11 +1,11 @@
 import './App.css'
-import { Tile } from './component/Tile'
+import { Grid } from './component/Grid'
 
 function App() {
 
   return (
     <>
-      <Tile tipo='A'/>
+      <Grid lines={10} columns={12}/>
     </>
   )
 }
