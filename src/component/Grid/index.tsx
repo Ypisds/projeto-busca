@@ -20,6 +20,7 @@ export function Grid({rows, columns}: GridProps){
     const [agentPosition, setAgentPosition] = useState<Position>(generateAgentPosition(rows, columns, grid))
     const [foodPosition, setFoodPosition] = useState<Position>(generateFoodPosition(rows, columns, grid, agentPosition))
 
+    // Sempre que for alterado o as linhas e colunas, refaz o grid e spawna o agente e a comida
     useEffect(() => {
         const newGrid = generateGrid(rows, columns);
 
@@ -51,7 +52,7 @@ export function Grid({rows, columns}: GridProps){
     }
 
     return (
-        <>
+        <> 
             <div className={styles.buttons_container}>
                 <button className={styles.buttom} onClick={handleMoveLeft}>
                     ←

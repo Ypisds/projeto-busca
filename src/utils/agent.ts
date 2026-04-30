@@ -9,15 +9,21 @@ function generatePosition(rows:number, columns: number): Position
     }
 }
 
+
 export function generateAgentPosition(rows: number, columns: number, grid: TerrainDifficulty[][]): Position
 {
     let position: Position
     do{
         position = generatePosition(rows, columns)
-    }while(grid[position.y][position.x] === 'O')
+    }while(grid[position.y][position.x] === 'O') // Não permite que o agente spawne num obstáculo
     return position
 }
 
+/*
+ Abaixo estão listadas quatro funções auxiliares de movimentação do agente
+ Não é permitido que o agente saia do Grid
+ Não é permitido que o agente ocupe um obstáculo('O')
+*/
 export function moveRight( columns: number, agentPosition: Position, grid: TerrainDifficulty[][]): Position
 {
     const nextX = agentPosition.x + 1
