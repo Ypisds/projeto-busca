@@ -11,26 +11,26 @@ import { Food } from '../Food'
 import { generateFoodPosition } from '../../utils/food'
 
 interface GridProps{
-    lines: number
+    rows: number
     columns: number
 }
 
-export function Grid({lines, columns}: GridProps){
-    const [grid, setGrid] = useState<TerrainDifficulty[][]>(generateGrid(lines, columns))
-    const [agentPosition, setAgentPosition] = useState<Position>(generateAgentPosition(lines, columns, grid))
-    const [foodPosition, setFoodPosition] = useState<Position>(generateFoodPosition(lines, columns, grid, agentPosition))
+export function Grid({rows, columns}: GridProps){
+    const [grid, setGrid] = useState<TerrainDifficulty[][]>(generateGrid(rows, columns))
+    const [agentPosition, setAgentPosition] = useState<Position>(generateAgentPosition(rows, columns, grid))
+    const [foodPosition, setFoodPosition] = useState<Position>(generateFoodPosition(rows, columns, grid, agentPosition))
 
     useEffect(() => {
-        const newGrid = generateGrid(lines, columns);
+        const newGrid = generateGrid(rows, columns);
 
-        const newAgentPosition = generateAgentPosition(lines, columns, newGrid);
+        const newAgentPosition = generateAgentPosition(rows, columns, newGrid);
 
-        const newFoodPosition = generateFoodPosition(lines, columns, newGrid, newAgentPosition)
+        const newFoodPosition = generateFoodPosition(rows, columns, newGrid, newAgentPosition)
 
         setGrid(newGrid);
         setAgentPosition(newAgentPosition);
         setFoodPosition(newFoodPosition)
-    }, [lines, columns]);
+    }, [rows, columns]);
 
     const gridTile = grid.map((row, y)=>(
         row.map((cell, x) => (
@@ -48,7 +48,7 @@ export function Grid({lines, columns}: GridProps){
         className={styles.row}
         style={{ 
         "--cols": columns,
-        "--rows": lines,
+        "--rows": rows,
       } as React.CSSProperties}
         >
             {gridTile}

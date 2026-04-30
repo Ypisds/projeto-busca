@@ -14,9 +14,9 @@ function generateColumns(columns: number): TerrainDifficulty[]
     })
 }
 
-export function generateGrid(lines: number, columns: number): TerrainDifficulty[][]
+export function generateGrid(rows: number, columns: number): TerrainDifficulty[][]
 {
-    return Array.from({length: lines}, () =>{
+    return Array.from({length: rows}, () =>{
         return generateColumns(columns)
     })
 }
