@@ -52,7 +52,7 @@ export function Grid({rows, columns}: GridProps){
     }
 
     return (
-        <>
+        <> 
             <div className={styles.buttons_container}>
                 <button className={styles.buttom} onClick={handleMoveLeft}>
                     ←
