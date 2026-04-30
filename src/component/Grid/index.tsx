@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { generateGrid } from '../../utils/grid'
 import { useEffect } from 'react'
 import { Agent } from '../Agent'
-import { generateAgentPosition } from '../../utils/agent'
+import { generateAgentPosition, moveDown, moveLeft, moveRight, moveUp } from '../../utils/agent'
 import { Food } from '../Food'
 import { generateFoodPosition } from '../../utils/food'
 
@@ -32,27 +32,57 @@ export function Grid({rows, columns}: GridProps){
         setFoodPosition(newFoodPosition)
     }, [rows, columns]);
 
-    const gridTile = grid.map((row, y)=>(
-        row.map((cell, x) => (
-            <>
-                <Tile tipo={cell} key={`cell-${x}-${y}`}>
-                    {agentPosition.y === y && agentPosition.x === x && <Agent />}
-                    {foodPosition.y === y && foodPosition.x === x && <Food />}
-                </Tile>
-            </>
-        ))
-    ))
+    
+
+    function handleMoveLeft(){
+        setAgentPosition(prev => moveLeft(prev, grid))
+    }
+
+    function handleMoveRight(){
+        setAgentPosition(prev => moveRight(columns, prev, grid))
+    }
+
+    function handleMoveUp(){
+        setAgentPosition(prev => moveUp(prev, grid))
+    }
+
+    function handleMoveDown(){
+        setAgentPosition(prev => moveDown(rows, prev, grid))
+    }
 
     return (
-        <div 
-        className={styles.row}
-        style={{ 
-        "--cols": columns,
-        "--rows": rows,
-      } as React.CSSProperties}
-        >
-            {gridTile}
-        </div>
-        
+        <>
+            <div className={styles.buttons_container}>
+                <button className={styles.buttom} onClick={handleMoveLeft}>
+                    ←
+                </button>
+                <button className={styles.buttom} onClick={handleMoveRight}>
+                    →
+                </button>
+                <button className={styles.buttom} onClick={handleMoveUp}>
+                    ↑
+                </button>
+                <button className={styles.buttom} onClick={handleMoveDown}>
+                    ↓
+                </button>
+            </div>
+            <div 
+            className={styles.row}
+            style={{ 
+            "--cols": columns,
+            "--rows": rows,
+            } as React.CSSProperties}
+            >
+                {
+                grid.map((row, y)=>(
+                    row.map((cell, x) => (
+                        <Tile tipo={cell} key={`cell-${x}-${y}`}>
+                            {agentPosition.y === y && agentPosition.x === x && <Agent />}
+                            {foodPosition.y === y && foodPosition.x === x && <Food />}
+                        </Tile> 
+                    ))))
+                }
+            </div>
+        </>
     )
 }

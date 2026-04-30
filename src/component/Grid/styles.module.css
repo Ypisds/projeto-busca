@@ -4,3 +4,12 @@
   gap: 0;
   width: fit-content;
 }
+
+.buttons_container{
+  display: flex;
+}
+
+.buttom{
+  padding: 10px;
+  margin-right: 10px;
+}
