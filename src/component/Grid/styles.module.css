@@ -47,7 +47,7 @@
 .lb_M       { background-color: #9b7e4e; }
 .lb_A       { background-color: #4a90d9; }
 .lb_O       { background-color: #2d2d2d; }
-.lb_visited  { background-color: rgba(120, 40, 220, 0.55); }
-.lb_frontier { background-color: rgba(255, 120, 0,  0.80); }
-.lb_current  { background-color: rgba(0, 230, 255, 0.90);  }
-.lb_path     { background-color: rgba(40, 210, 80,  0.82); border: 2px solid #1a9e40; }
+.lb_visited  { background-color: rgba(100, 0,   210, 0.28); }
+.lb_frontier { background-color: rgba(255, 130,   0, 0.82); }
+.lb_current  { background-color: rgba(0,   240, 255, 0.95); }
+.lb_path     { background-color: rgba(30,  200,  70, 0.88); border: 2px solid #0d7a2a; }

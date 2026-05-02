@@ -24,26 +24,41 @@
   z-index: 1;
 }
 
-/* Visitado: roxo sólido, claramente processado */
+/*
+ * Visitado: tinta leve (28%) — o terreno fica visível por baixo.
+ * Areia visitada ≠ água visitada: o espectador consegue sentir o tipo de
+ * terreno que o algoritmo atravessou, e a "nuvem" roxa marca o território
+ * explorado sem ofuscar nada.
+ */
 .overlay_visited {
-  background-color: rgba(120, 40, 220, 0.55);
+  background-color: rgba(100, 0, 210, 0.28);
 }
 
-/* Fronteira: laranja vibrante, "esperando" */
+/*
+ * Fronteira: laranja forte + pulso lento — é a "onda" da busca.
+ * O espectador vê uma borda vibrante se expandindo a partir do agente,
+ * deixando claro que o BFS avança camada por camada.
+ */
 .overlay_frontier {
-  background-color: rgba(255, 120, 0, 0.80);
+  background-color: rgba(255, 130, 0, 0.82);
+  animation: pulse-frontier 0.65s ease-in-out infinite alternate;
 }
 
-/* Caminho final: verde com borda interna destacada */
+@keyframes pulse-frontier {
+  from { opacity: 0.55; }
+  to   { opacity: 1.00; }
+}
+
+/* Caminho final: verde sólido com borda interna */
 .overlay_path {
-  background-color: rgba(40, 210, 80, 0.82);
-  box-shadow: inset 0 0 0 3px #1a9e40;
+  background-color: rgba(30, 200, 70, 0.88);
+  box-shadow: inset 0 0 0 3px #0d7a2a;
 }
 
-/* Célula atual sendo expandida: ciano pulsando */
+/* Célula sendo expandida agora: ciano pulsando — ponto de atenção do espectador */
 .overlay_current {
-  background-color: rgba(0, 230, 255, 0.90);
-  animation: pulse-current 0.35s ease-in-out infinite alternate;
+  background-color: rgba(0, 240, 255, 0.95);
+  animation: pulse-current 0.30s ease-in-out infinite alternate;
 }
 
 @keyframes pulse-current {
