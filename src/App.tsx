@@ -57,6 +57,7 @@ function App() {
       <div className="hero">
         {/* variaveis de controle nas props da grid */}
         <Grid
+          key={`${rows}-${columns}`}
           rows={rows}
           columns={columns}
           isPaused={isPaused}

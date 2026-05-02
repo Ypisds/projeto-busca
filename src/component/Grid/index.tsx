@@ -21,16 +21,7 @@ export function Grid({ rows, columns, isPaused, algoritmo, velocidade }: GridPro
     const [grid, setGrid] = useState<TerrainDifficulty[][]>(generateGrid(rows, columns))
     const [agentPosition, setAgentPosition] = useState<Position>(generateAgentPosition(rows, columns, grid))
     const [foodPosition, setFoodPosition] = useState<Position>(generateFoodPosition(rows, columns, grid, agentPosition))
-    useEffect(() => {
-        const newGrid = generateGrid(rows, columns);
-        const newAgentPosition = generateAgentPosition(rows, columns, newGrid);
-        const newFoodPosition = generateFoodPosition(rows, columns, newGrid, newAgentPosition)
-
-        setGrid(newGrid);
-        setAgentPosition(newAgentPosition);
-        setFoodPosition(newFoodPosition)
-    }, [rows, columns]);
-
+    
     // o agente "come" a comida e gera uma nova
     useEffect(() => {
         if (agentPosition.x === foodPosition.x && agentPosition.y === foodPosition.y) {
