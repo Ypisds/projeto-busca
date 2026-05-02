@@ -14,6 +14,6 @@ export function generateFoodPosition(rows: number, columns: number, grid: Terrai
     let position: Position
     do{
         position = generatePosition(rows, columns)
-    }while(grid[position.y][position.x] === 'O' || agentPosition === position) // Não permite que a comida spawne em um obstáculo e nem na posição do spawn do agente
+    }while(grid[position.y][position.x] === 'O' || (position.x === agentPosition.x && position.y === agentPosition.y)) // Não permite que a comida spawne em um obstáculo e nem na posição do agente
     return position
 }

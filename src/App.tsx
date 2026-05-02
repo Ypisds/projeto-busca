@@ -8,7 +8,7 @@ function App() {
   const [columns, setColumns] = useState(12);
   const [isPaused, setIsPaused] = useState(false);
   const [algoritmo, setAlgoritmo] = useState("BFS");
-  const [velocidade, setVelocidade] = useState(100);
+  const [velocidade, setVelocidade] = useState(200);
 
   return (
     <div id="center">

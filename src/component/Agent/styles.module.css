@@ -6,6 +6,8 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: rgba(255, 2, 2, 0.3); 
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  background-color: #e53935;
+  border: 2px solid #fff;
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
