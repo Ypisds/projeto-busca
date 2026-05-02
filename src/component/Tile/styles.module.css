@@ -63,9 +63,9 @@
   z-index: 1;
 }
 
-/* Visitado: névoa cinza-azulada leve — textura do terreno transpassa */
+/* Visitado: violeta sólido (62%) — nenhum terreno é roxo, impossível confundir */
 .overlay_visited {
-  background-color: rgba(180, 200, 230, 0.45);
+  background-color: rgba(110, 0, 220, 0.62);
 }
 
 /* Fronteira: laranja quente + pulso — a "onda" avançando */
@@ -85,14 +85,10 @@
   box-shadow: inset 0 0 0 3px #0f7a25;
 }
 
-/*
- * Célula sendo expandida agora: AMARELO OURO pulsando.
- * Completamente diferente de qualquer terreno (nenhum é amarelo),
- * garantindo que o espectador sempre saiba onde está o foco da busca.
- */
+/* Expandindo agora: MAGENTA quente — fora de toda paleta de terreno e overlays */
 .overlay_current {
-  background-color: rgba(255, 220, 0, 0.97);
-  box-shadow: inset 0 0 0 2px rgba(160, 110, 0, 0.70);
+  background-color: rgba(255, 20, 200, 0.97);
+  box-shadow: inset 0 0 0 2px rgba(180, 0, 140, 0.80);
   animation: pulse-current 0.28s ease-in-out infinite alternate;
 }
 
