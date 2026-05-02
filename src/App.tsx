@@ -4,6 +4,8 @@ import { useState } from 'react'
 
 function App() {
   // estados de controle = pausa, qual algoritmo e velocidade
+  const [rows, setRows] = useState(10);
+  const [columns, setColumns] = useState(12);
   const [isPaused, setIsPaused] = useState(false);
   const [algoritmo, setAlgoritmo] = useState("BFS");
   const [velocidade, setVelocidade] = useState(100);
@@ -14,6 +16,14 @@ function App() {
 
       {/* controle dos botoes */}
       <div className="buttons_container">
+        <button className="counter" onClick={() => setRows(prev => prev + 1)}>
+          + Linhas ({rows})
+        </button>
+
+        <button className="counter" onClick={() => setColumns(prev => prev + 1)}>
+          + Colunas ({columns})
+        </button>
+
         <button className="counter" onClick={() => setIsPaused(!isPaused)}>
           {isPaused ? "Retomar" : "Pausar"}
         </button>
@@ -46,8 +56,8 @@ function App() {
       <div className="hero">
         {/* variaveis de controle nas props da grid */}
         <Grid
-          rows={10}
-          columns={12}
+          rows={rows}
+          columns={columns}
           isPaused={isPaused}
           algoritmo={algoritmo}
           velocidade={velocidade}
