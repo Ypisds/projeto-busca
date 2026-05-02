@@ -40,6 +40,7 @@ function App() {
           <option value="BFS">BFS</option>
           <option value="DFS">DFS</option>
           <option value="Dijkstra">Dijkstra</option>
+          <option value="Greedy">Greedy</option>
           <option value="A*">A*</option>
         </select>
 
