@@ -113,11 +113,22 @@ export function Grid({ rows, columns, isPaused, algoritmo: _algoritmo, velocidad
         {grid.map((row: TerrainDifficulty[], y: number) =>
           row.map((cell: TerrainDifficulty, x: number) => (
             <Tile tipo={cell} state={getTileState(x, y)} key={`cell-${x}-${y}`}>
-              {animation.agentPosition.y === y && animation.agentPosition.x === x && <Agent />}
               {foodPosition.y === y && foodPosition.x === x && <Food />}
             </Tile>
           ))
         )}
+
+        {/* Agent como overlay absoluto — permite CSS transition suave entre células */}
+        <div
+          className={styles.agentMarker}
+          style={{
+            left: animation.agentPosition.x * 50,
+            top: animation.agentPosition.y * 50,
+            transitionDuration: animation.phase === 'moving' ? `${Math.round(velocidade * 0.8)}ms` : '0ms',
+          }}
+        >
+          <Agent />
+        </div>
       </div>
 
       {renderStatus()}
