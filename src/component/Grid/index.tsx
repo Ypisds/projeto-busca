@@ -10,7 +10,6 @@ import { generateAgentPosition } from '../../utils/agent'
 import { Food } from '../Food'
 import { generateFoodPosition } from '../../utils/food'
 import { useSearchAnimation } from '../../hooks/useSearchAnimation'
-import { defaultBFS } from '../../utils/defaultPathfinder'
 import { runSearch } from '../../utils/search'
 
 interface GridProps {
