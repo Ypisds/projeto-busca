@@ -45,13 +45,16 @@ function App() {
         </select>
 
         {/* dinamica da velocidade */}
-        <input
-          type="range"
-          min="50"
-          max="2000"
-          value={velocidade}
-          onChange={(e) => setVelocidade(Number(e.target.value))}
-        />
+        <div className="input-container">
+          <span>Delay:</span>
+          <input
+            type="range"
+            min="50"
+            max="2000"
+            value={velocidade}
+            onChange={(e) => setVelocidade(Number(e.target.value))}
+          />
+        </div>
       </div>
 
       <div className="hero">
