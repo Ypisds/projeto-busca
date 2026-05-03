@@ -20,6 +20,21 @@
   }
 }
 
+.input-label{
+  font-size: 16px;
+  color: var(--accent);
+}
+
+.buttons_container_inner {
+  display: flex;
+  gap: 5px;
+}
+
+.input-container{
+  display: flex;
+  flex-direction: column;
+}
+
 .buttons_container {
   display: flex;
   flex-wrap: wrap;
