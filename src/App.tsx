@@ -6,7 +6,7 @@ function App() {
   // estados de controle = pausa, qual algoritmo e velocidade
   const [rows, setRows] = useState(10);
   const [columns, setColumns] = useState(12);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
   const [algoritmo, setAlgoritmo] = useState("BFS");
   const [velocidade, setVelocidade] = useState(450);
 
