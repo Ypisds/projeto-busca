@@ -8,7 +8,7 @@ function App() {
   const [columns, setColumns] = useState(12);
   const [isPaused, setIsPaused] = useState(false);
   const [algoritmo, setAlgoritmo] = useState("BFS");
-  const [velocidade, setVelocidade] = useState(100);
+  const [velocidade, setVelocidade] = useState(450);
 
   return (
     <div id="center">
@@ -47,8 +47,8 @@ function App() {
         {/* dinamica da velocidade */}
         <input
           type="range"
-          min="10"
-          max="1000"
+          min="50"
+          max="2000"
           value={velocidade}
           onChange={(e) => setVelocidade(Number(e.target.value))}
         />

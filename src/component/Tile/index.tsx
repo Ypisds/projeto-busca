@@ -2,19 +2,19 @@ import styles from './styles.module.css'
 import { type TerrainDifficulty } from '../../types/TerrainDifficulty'
 import type { ReactNode } from 'react'
 
-interface TileProps{
-    tipo: TerrainDifficulty,
-    children?: ReactNode
-};
+export type TileState = 'normal' | 'visited' | 'frontier' | 'path' | 'current'
 
-//TODO: Mudar o Tile para retornar uma textura de terreno diferente com base em seu tipo de terreno
-export function Tile({tipo, children}: TileProps){
-    return(
-        <div className={styles.tile_container}>
-            {tipo}
-            {children}
-        </div>
-    )
-        
-           
+interface TileProps {
+  tipo: TerrainDifficulty
+  state?: TileState
+  children?: ReactNode
+}
+
+export function Tile({ tipo, state = 'normal', children }: TileProps) {
+  return (
+    <div className={`${styles.tile} ${styles[`terrain_${tipo}`]}`}>
+      {state !== 'normal' && <div className={styles[`overlay_${state}`]} />}
+      {children}
+    </div>
+  )
 }

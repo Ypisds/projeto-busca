@@ -1,102 +1,148 @@
 import styles from './styles.module.css'
 import { Tile } from '../Tile'
+import type { TileState } from '../Tile'
 import { type TerrainDifficulty } from '../../types/TerrainDifficulty'
 import { type Position } from '../../types/Position'
-import { useState, useEffect } from 'react' 
+import { useState, useEffect, type CSSProperties } from 'react'
 import { generateGrid } from '../../utils/grid'
 import { Agent } from '../Agent'
-import { generateAgentPosition, moveDown, moveLeft, moveRight, moveUp } from '../../utils/agent'
+import { generateAgentPosition } from '../../utils/agent'
 import { Food } from '../Food'
 import { generateFoodPosition } from '../../utils/food'
+import { useSearchAnimation } from '../../hooks/useSearchAnimation'
+import { defaultBFS } from '../../utils/defaultPathfinder'
 
 interface GridProps {
-    rows: number
-    columns: number
-    isPaused: boolean    
-    algoritmo: string    
-    velocidade: number   
+  rows: number
+  columns: number
+  isPaused: boolean
+  algoritmo: string
+  velocidade: number
 }
 
-export function Grid({ rows, columns, isPaused, algoritmo, velocidade }: GridProps) {
-    const [grid, setGrid] = useState<TerrainDifficulty[][]>(generateGrid(rows, columns))
-    const [agentPosition, setAgentPosition] = useState<Position>(generateAgentPosition(rows, columns, grid))
-    const [foodPosition, setFoodPosition] = useState<Position>(generateFoodPosition(rows, columns, grid, agentPosition))
-    
-    // o agente "come" a comida e gera uma nova
-    useEffect(() => {
-        if (agentPosition.x === foodPosition.x && agentPosition.y === foodPosition.y) {
-            console.log(`Objetivo atingido com o algoritmo: ${algoritmo}`);
-            
-            // cria uma nova posicao para a comida
-            const newFood = generateFoodPosition(rows, columns, grid, agentPosition);
-            setFoodPosition(newFood);
-        }
-    }, [agentPosition, foodPosition, rows, columns, grid, algoritmo]);
+export function Grid({ rows, columns, isPaused, algoritmo: _algoritmo, velocidade }: GridProps) {
+  // Inicialização encadeada: grid → agente → comida, tudo consistente no primeiro render.
+  // Quando rows/columns mudam, o App.tsx remonta o Grid via key, então não precisamos
+  // de useEffect aqui para isso.
+  const [grid] = useState<TerrainDifficulty[][]>(() => generateGrid(rows, columns))
+  const [agentStartPos] = useState<Position>(() => generateAgentPosition(rows, columns, grid))
+  const [foodPosition, setFoodPosition] = useState<Position>(() =>
+    generateFoodPosition(rows, columns, grid, agentStartPos)
+  )
 
-    // automatizando o movimento do agente
-    useEffect(() => {
-        if (isPaused) return;
-        if (agentPosition.x === foodPosition.x && agentPosition.y === foodPosition.y) return;
+  const animation = useSearchAnimation({
+    initialAgentPosition: agentStartPos,
+    grid,
+    isPaused,
+    velocidade,
+    onPathComplete: (finalPos: Position) => {
+      const newFood = generateFoodPosition(rows, columns, grid, finalPos)
+      setFoodPosition(newFood)
+    },
+  })
 
-        const linhaAtual = grid[agentPosition.y];
-        if (!linhaAtual) return;
+  // Inicia uma nova busca sempre que a fase voltar a 'idle' (início ou após coleta)
+  useEffect(() => {
+    if (animation.phase !== 'idle') return
+    const result = defaultBFS(animation.agentPosition, foodPosition, grid, rows, columns)
+    animation.startAnimation(result)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [animation.phase, foodPosition])
 
-        const valorCelula = linhaAtual[agentPosition.x];
-        const custoTerreno = typeof valorCelula === 'number' ? valorCelula : 1;
-        const delayReal = Number(velocidade) * (custoTerreno > 0 ? custoTerreno : 1);
+  // Quando não há caminho, gera nova comida após breve pausa e retoma
+  useEffect(() => {
+    if (animation.phase !== 'no_path') return
+    const timer = setTimeout(() => {
+      const newFood = generateFoodPosition(rows, columns, grid, animation.agentPosition)
+      setFoodPosition(newFood)
+      animation.resetAnimation(animation.agentPosition)
+    }, 1500)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [animation.phase])
 
-        const timer = setInterval(() => {
-            if (agentPosition.x < foodPosition.x) handleMoveRight();
-            else if (agentPosition.x > foodPosition.x) handleMoveLeft();
-            else if (agentPosition.y < foodPosition.y) handleMoveDown();
-            else if (agentPosition.y > foodPosition.y) handleMoveUp();
-        }, delayReal);
+  function getTileState(x: number, y: number): TileState {
+    const key = `${x},${y}`
+    if (animation.currentCell === key) return 'current'
+    if (animation.pathSet.has(key)) return 'path'
+    if (animation.frontierSet.has(key)) return 'frontier'
+    if (animation.visitedSet.has(key)) return 'visited'
+    return 'normal'
+  }
 
-        return () => clearInterval(timer);
-    }, [isPaused, agentPosition, foodPosition, velocidade, grid]);
-
-    function handleMoveLeft() {
-        setAgentPosition(prev => moveLeft(prev, grid))
+  function renderStatus() {
+    switch (animation.phase) {
+      case 'searching':
+        return (
+          <p className={`${styles.status} ${styles.status_searching}`}>
+            Buscando... ({animation.frameIndex} / {animation.totalFrames} passos)
+          </p>
+        )
+      case 'found':
+        return (
+          <p className={`${styles.status} ${styles.status_found}`}>
+            Caminho encontrado! Custo total: {animation.totalCost}
+          </p>
+        )
+      case 'moving':
+        return (
+          <p className={`${styles.status} ${styles.status_moving}`}>
+            Percorrendo o caminho... (custo: {animation.totalCost})
+          </p>
+        )
+      case 'no_path':
+        return (
+          <p className={`${styles.status} ${styles.status_no_path}`}>
+            Sem caminho! Gerando nova comida...
+          </p>
+        )
+      default:
+        return <p className={styles.status}></p>
     }
+  }
 
-    function handleMoveRight() {
-        setAgentPosition(prev => moveRight(columns, prev, grid))
-    }
+  return (
+    <>
+      <div
+        className={styles.row}
+        style={{
+          '--cols': columns,
+          '--rows': rows,
+        } as CSSProperties}
+      >
+        {grid.map((row: TerrainDifficulty[], y: number) =>
+          row.map((cell: TerrainDifficulty, x: number) => (
+            <Tile tipo={cell} state={getTileState(x, y)} key={`cell-${x}-${y}`}>
+              {foodPosition.y === y && foodPosition.x === x && <Food />}
+            </Tile>
+          ))
+        )}
 
-    function handleMoveUp() {
-        setAgentPosition(prev => moveUp(prev, grid))
-    }
+        {/* Agent como overlay absoluto — permite CSS transition suave entre células */}
+        <div
+          className={styles.agentMarker}
+          style={{
+            left: animation.agentPosition.x * 50,
+            top: animation.agentPosition.y * 50,
+            transitionDuration: animation.phase === 'moving' ? `${Math.round(velocidade * 0.8)}ms` : '0ms',
+          }}
+        >
+          <Agent />
+        </div>
+      </div>
 
-    function handleMoveDown() {
-        setAgentPosition(prev => moveDown(rows, prev, grid))
-    }
+      {renderStatus()}
 
-    return (
-        <> 
-            <div className={styles.buttons_container}>
-                <button className={styles.buttom} onClick={handleMoveLeft}> ← </button>
-                <button className={styles.buttom} onClick={handleMoveRight}> → </button>
-                <button className={styles.buttom} onClick={handleMoveUp}> ↑ </button>
-                <button className={styles.buttom} onClick={handleMoveDown}> ↓ </button>
-            </div>
-            <div 
-                className={styles.row}
-                style={{ 
-                    "--cols": columns,
-                    "--rows": rows,
-                } as React.CSSProperties}
-            >
-                {
-                    grid.map((row, y) => (
-                        row.map((cell, x) => (
-                            <Tile tipo={cell} key={`cell-${x}-${y}`}>
-                                {agentPosition.y === y && agentPosition.x === x && <Agent />}
-                                {foodPosition.y === y && foodPosition.x === x && <Food />}
-                            </Tile> 
-                        ))
-                    ))
-                }
-            </div>
-        </>
-    )
+      <div className={styles.legend}>
+        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_B}`}/> Areia (custo 1)</span>
+        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_M}`}/> Atoleiro (custo 5)</span>
+        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_A}`}/> Água (custo 10)</span>
+        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_O}`}/> Obstáculo</span>
+        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_visited}`}/> Visitado</span>
+        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_frontier}`}/> Fronteira</span>
+        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_current}`}/> Expandindo agora</span>
+        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_path}`}/> Caminho final</span>
+      </div>
+    </>
+  )
 }

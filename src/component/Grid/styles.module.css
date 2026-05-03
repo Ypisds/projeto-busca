@@ -1,15 +1,80 @@
-.row{
+.row {
   display: grid;
   grid-template-columns: repeat(var(--cols), 50px);
   gap: 0;
   width: fit-content;
+  border: 2px solid #555;
+  position: relative;
 }
 
-.buttons_container{
+.agentMarker {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  pointer-events: none;
+  z-index: 10;
+  transition-property: left, top;
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-duration: 0ms;
+}
+
+/* ── Status ──────────────────────────────────────────── */
+.status {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 20px;
+  letter-spacing: 0.02em;
+}
+
+.status_searching { color: #b060ff; }
+.status_found     { color: #22cc55; }
+.status_moving    { color: #ff9900; }
+.status_no_path   { color: #ff4040; }
+
+/* ── Legenda ─────────────────────────────────────────── */
+.legend {
   display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 10px;
+  font-size: 12px;
 }
 
-.buttom{
-  padding: 10px;
-  margin-right: 10px;
+.legend_item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
+
+.legend_box {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.lb_B {
+  background-color: #c9a86c;
+  background-image: radial-gradient(circle, rgba(0,0,0,0.13) 1px, transparent 1px);
+  background-size: 7px 7px;
+}
+.lb_M {
+  background-color: #5e3d1f;
+  background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.22) 0px, rgba(0,0,0,0.22) 2px, transparent 2px, transparent 7px);
+}
+.lb_A {
+  background-color: #1a6eaa;
+  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.16) 0px, rgba(255,255,255,0.16) 3px, transparent 3px, transparent 11px);
+}
+.lb_O {
+  background-color: #111827;
+  background-image:
+    repeating-linear-gradient(45deg,  rgba(255,255,255,0.07) 0px, rgba(255,255,255,0.07) 2px, transparent 2px, transparent 9px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,0.07) 0px, rgba(255,255,255,0.07) 2px, transparent 2px, transparent 9px);
+}
+.lb_visited  { background-color: rgba(110,   0, 220, 0.62); }
+.lb_frontier { background-color: rgba(255, 105,   0, 0.83); }
+.lb_current  { background-color: rgba(255,  20, 200, 0.97); border: 2px solid rgba(180,0,140,0.8); }
+.lb_path     { background-color: rgba(45,  210,  75, 0.92); border: 2px solid #0f7a25; }
