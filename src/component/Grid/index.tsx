@@ -11,6 +11,7 @@ import { Food } from '../Food'
 import { generateFoodPosition } from '../../utils/food'
 import { useSearchAnimation } from '../../hooks/useSearchAnimation'
 import { defaultBFS } from '../../utils/defaultPathfinder'
+import { runSearch } from '../../utils/search'
 
 interface GridProps {
   rows: number
@@ -44,7 +45,7 @@ export function Grid({ rows, columns, isPaused, algoritmo: _algoritmo, velocidad
   // Inicia uma nova busca sempre que a fase voltar a 'idle' (início ou após coleta)
   useEffect(() => {
     if (animation.phase !== 'idle') return
-    const result = defaultBFS(animation.agentPosition, foodPosition, grid, rows, columns)
+    const result = runSearch(_algoritmo, grid, animation.agentPosition, foodPosition, rows, columns);
     animation.startAnimation(result)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animation.phase, foodPosition])

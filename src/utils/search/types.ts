@@ -1,18 +1,6 @@
 import type { Position } from "../../types/Position";
 import type { TerrainDifficulty } from "../../types/TerrainDifficulty";
 
-export interface SearchResult {
-  path: Position[];
-  visited: Position[];
-  cost: number;
-}
-
-export type SearchFn = (
-  grid: TerrainDifficulty[][],
-  start: Position,
-  goal: Position
-) => SearchResult;
-
 export function terrainCost(cell: TerrainDifficulty): number {
   switch (cell) {
     case 'B': return 1;
