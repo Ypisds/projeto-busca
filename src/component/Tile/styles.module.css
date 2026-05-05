@@ -63,9 +63,12 @@
   z-index: 1;
 }
 
-/* Visitado: vermelho saturado */
+/* Visitado: borda vermelha por dentro — terreno 100% visível */
 .overlay_visited {
-  background-color: #dc2626;
+  background-color: transparent;
+  box-shadow:
+    inset 0 0 0 4px #dc2626,
+    inset 0 0 0 5px rgba(0, 0, 0, 0.35);
 }
 
 /* Fronteira: verde forte com pulso de brilho */
