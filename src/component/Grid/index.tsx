@@ -11,6 +11,7 @@ import { Food } from '../Food'
 import { generateFoodPosition } from '../../utils/food'
 import { useSearchAnimation } from '../../hooks/useSearchAnimation'
 import { runSearch } from '../../utils/search'
+import { TERRAIN_SPEED_MULTIPLIER } from '../../utils/terrain'
 
 interface GridProps {
   rows: number
@@ -63,12 +64,24 @@ export function Grid({ rows, columns, isPaused, algoritmo: _algoritmo, velocidad
 
   function getTileState(x: number, y: number): TileState {
     const key = `${x},${y}`
-    if (animation.currentCell === key) return 'current'
     if (animation.pathSet.has(key)) return 'path'
     if (animation.frontierSet.has(key)) return 'frontier'
     if (animation.visitedSet.has(key)) return 'visited'
     return 'normal'
   }
+
+  // Esmaecer todas as células que NÃO são caminho, assim que o caminho
+  // é descoberto. Põe a "rota encontrada" em destaque visual.
+  const dimNonPath = animation.phase === 'found' || animation.phase === 'moving'
+
+  // Duração da transição CSS do agente: proporcional ao custo do terreno
+  // onde ele está entrando. Areia → rápido; água → bem lento. Assim a
+  // travessia visual reflete o custo real, em vez de pausar antes.
+  const agentTerrain = grid[animation.agentPosition.y]?.[animation.agentPosition.x]
+  const agentTransitionMs =
+    animation.phase === 'moving' && agentTerrain
+      ? Math.round(velocidade * TERRAIN_SPEED_MULTIPLIER[agentTerrain])
+      : 0
 
   function renderStatus() {
     switch (animation.phase) {
@@ -81,13 +94,13 @@ export function Grid({ rows, columns, isPaused, algoritmo: _algoritmo, velocidad
       case 'found':
         return (
           <p className={`${styles.status} ${styles.status_found}`}>
-            Caminho encontrado! Custo total: {animation.totalCost}
+            Caminho encontrado! Custo: {animation.totalCost} · {animation.totalPathSteps} passos
           </p>
         )
       case 'moving':
         return (
           <p className={`${styles.status} ${styles.status_moving}`}>
-            Percorrendo o caminho... (custo: {animation.totalCost})
+            Percorrendo... passo {Math.min(animation.pathStep, animation.totalPathSteps)} / {animation.totalPathSteps}
           </p>
         )
       case 'no_path':
@@ -102,7 +115,7 @@ export function Grid({ rows, columns, isPaused, algoritmo: _algoritmo, velocidad
   }
 
   return (
-    <>
+    <div className={styles.gridContainer}>
       <div
         className={styles.row}
         style={{
@@ -111,20 +124,28 @@ export function Grid({ rows, columns, isPaused, algoritmo: _algoritmo, velocidad
         } as CSSProperties}
       >
         {grid.map((row: TerrainDifficulty[], y: number) =>
-          row.map((cell: TerrainDifficulty, x: number) => (
-            <Tile tipo={cell} state={getTileState(x, y)} key={`cell-${x}-${y}`}>
-              {foodPosition.y === y && foodPosition.x === x && <Food />}
-            </Tile>
-          ))
+          row.map((cell: TerrainDifficulty, x: number) => {
+            const tileState = getTileState(x, y)
+            return (
+              <Tile
+                tipo={cell}
+                state={tileState}
+                dimmed={dimNonPath && tileState !== 'path'}
+                key={`cell-${x}-${y}`}
+              >
+                {foodPosition.y === y && foodPosition.x === x && <Food />}
+              </Tile>
+            )
+          })
         )}
 
         {/* Agent como overlay absoluto — permite CSS transition suave entre células */}
         <div
-          className={styles.agentMarker}
+          className={`${styles.agentMarker} ${animation.phase === 'moving' ? styles.agentMoving : ''}`}
           style={{
             left: animation.agentPosition.x * 50,
             top: animation.agentPosition.y * 50,
-            transitionDuration: animation.phase === 'moving' ? `${Math.round(velocidade * 0.8)}ms` : '0ms',
+            transitionDuration: `${agentTransitionMs}ms`,
           }}
         >
           <Agent />
@@ -134,15 +155,14 @@ export function Grid({ rows, columns, isPaused, algoritmo: _algoritmo, velocidad
       {renderStatus()}
 
       <div className={styles.legend}>
-        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_B}`}/> Areia (custo 1)</span>
-        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_M}`}/> Atoleiro (custo 5)</span>
-        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_A}`}/> Água (custo 10)</span>
+        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_B}`}/> Areia (1)</span>
+        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_M}`}/> Atoleiro (5)</span>
+        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_A}`}/> Água (10)</span>
         <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_O}`}/> Obstáculo</span>
         <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_visited}`}/> Visitado</span>
         <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_frontier}`}/> Fronteira</span>
-        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_current}`}/> Expandindo agora</span>
-        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_path}`}/> Caminho final</span>
+        <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_path}`}/> Caminho</span>
       </div>
-    </>
+    </div>
   )
 }
