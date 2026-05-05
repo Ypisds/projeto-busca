@@ -53,12 +53,15 @@ export function useSearchAnimation({
   }, [phase])
 
   // --- Movimento do agente ao longo do caminho ---
+  // Move o agente IMEDIATAMENTE (a transição CSS faz a travessia visível,
+  // com duração proporcional ao custo do terreno-destino). Só avança o
+  // próximo passo quando a travessia visualmente termina. Assim a "demora"
+  // acontece ENQUANTO o agente cruza a água, não antes de entrar nela.
   useEffect(() => {
     if (phase !== 'moving' || !searchResult?.path || isPaused) return
     const path = searchResult.path
 
     if (pathStep >= path.length) {
-      // Agente chegou na comida
       const finalPos = path[path.length - 1]
       onPathCompleteRef.current(finalPos)
       setPhase('idle')
@@ -70,12 +73,13 @@ export function useSearchAnimation({
 
     const nextPos = path[pathStep]
     const terrain = grid[nextPos.y][nextPos.x]
-    const delay = velocidade * TERRAIN_SPEED_MULTIPLIER[terrain]
+    const stepTime = velocidade * TERRAIN_SPEED_MULTIPLIER[terrain]
+
+    setAgentPosition(nextPos)
 
     const timer = setTimeout(() => {
-      setAgentPosition(nextPos)
       setPathStep(s => s + 1)
-    }, delay)
+    }, stepTime)
     return () => clearTimeout(timer)
   }, [phase, pathStep, searchResult, isPaused, velocidade, grid])
 
@@ -96,13 +100,12 @@ export function useSearchAnimation({
   }, [])
 
   // --- Conjuntos de visualização calculados a partir do frame atual ---
-  const { visitedSet, frontierSet, pathSet, currentCell } = useMemo(() => {
+  const { visitedSet, frontierSet, pathSet } = useMemo(() => {
     if (!searchResult) {
       return {
         visitedSet: new Set<string>(),
         frontierSet: new Set<string>(),
         pathSet: new Set<string>(),
-        currentCell: null as string | null,
       }
     }
 
@@ -110,18 +113,13 @@ export function useSearchAnimation({
     const visitedSet = new Set(frame?.visited ?? [])
     const frontierSet = new Set(frame?.frontier ?? [])
 
-    // Célula que acabou de ser expandida = última no array visited do frame atual
-    const currentCell =
-      phase === 'searching' && frame && frame.visited.length > 0
-        ? frame.visited[frame.visited.length - 1]
-        : null
-
     const showPath = phase === 'found' || phase === 'moving'
+    const path = searchResult.path ?? []
     const pathSet = showPath
-      ? new Set(searchResult.path?.map(p => `${p.x},${p.y}`) ?? [])
+      ? new Set(path.map(p => `${p.x},${p.y}`))
       : new Set<string>()
 
-    return { visitedSet, frontierSet, pathSet, currentCell }
+    return { visitedSet, frontierSet, pathSet }
   }, [searchResult, frameIndex, phase])
 
   return {
@@ -130,9 +128,10 @@ export function useSearchAnimation({
     visitedSet,
     frontierSet,
     pathSet,
-    currentCell,
     frameIndex,
     totalFrames: searchResult?.frames.length ?? 0,
+    pathStep,
+    totalPathSteps: searchResult?.path?.length ?? 0,
     totalCost: searchResult?.totalCost ?? 0,
     startAnimation,
     resetAnimation,

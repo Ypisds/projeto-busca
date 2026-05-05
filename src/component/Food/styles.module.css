@@ -6,8 +6,16 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background-color: #ffd600;
-  border: 2px solid #fff;
+  background: radial-gradient(circle at 35% 30%, #f8d4d8 0%, #dcb1c6 60%, #a76e92 100%);
+  border: 3px solid #fdfbff;
   z-index: 2;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 0 0 1px rgba(120, 65, 105, 0.45),
+    0 4px 9px rgba(167, 110, 146, 0.5);
+  animation: food-pulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes food-pulse {
+  from { transform: translate(-50%, -50%) scale(0.94); }
+  to   { transform: translate(-50%, -50%) scale(1.06); }
 }

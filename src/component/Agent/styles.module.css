@@ -6,8 +6,10 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: #e53935;
-  border: 2px solid #fff;
+  background: radial-gradient(circle at 35% 30%, #d8c8ec 0%, #a89bce 60%, #6e5fa3 100%);
+  border: 3px solid #fdfbff;
   z-index: 2;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 0 0 1px rgba(70, 50, 110, 0.45),
+    0 4px 9px rgba(110, 95, 163, 0.55);
 }
