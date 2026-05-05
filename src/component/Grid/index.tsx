@@ -115,7 +115,7 @@ export function Grid({ rows, columns, isPaused, algoritmo: _algoritmo, velocidad
   }
 
   return (
-    <>
+    <div className={styles.gridContainer}>
       <div
         className={styles.row}
         style={{
@@ -163,6 +163,6 @@ export function Grid({ rows, columns, isPaused, algoritmo: _algoritmo, velocidad
         <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_frontier}`}/> Fronteira</span>
         <span className={styles.legend_item}><span className={`${styles.legend_box} ${styles.lb_path}`}/> Caminho</span>
       </div>
-    </>
+    </div>
   )
 }
